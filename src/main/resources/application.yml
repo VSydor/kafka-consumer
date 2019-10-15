@@ -1,0 +1,6 @@
+server:
+  port : 8081
+
+kafka:
+  defaultServer: localhost:9093
+  defaultTopic: test
