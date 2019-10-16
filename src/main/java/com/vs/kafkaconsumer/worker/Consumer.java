@@ -1,5 +1,6 @@
 package com.vs.kafkaconsumer.worker;
 
+import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
@@ -17,12 +18,6 @@ public class Consumer implements Runnable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Consumer.class);
 
-    // TODO: Is this already defined somewhere?
-    private static final String BOOTSTRAP_SERVER_PROPERTY_NAME = "bootstrap.servers";
-    private static final String GROUP_ID_PROPERTY_NAME = "group.id";
-    private static final String KEY_DESERIALIZER_PROPERTY_NAME = "key.deserializer";
-    private static final String VALUE_DESERIALIZER_PROPERTY_NAME = "value.deserializer";
-
     private final int id;
     private final String groupId;
     private final List<String> topics;
@@ -38,10 +33,22 @@ public class Consumer implements Runnable {
 
     @Override
     public void run() {
+        final int giveUp = 10;
+        int noRecordsCount = 0;
         try {
             consumer.subscribe(topics);
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Long.MAX_VALUE);
+
+                if (records.count()==0) {
+                    noRecordsCount++;
+                    if (noRecordsCount > giveUp) {
+                        LOGGER.info("Gave up after 100 tries!");
+                        break;
+                    }
+
+                }
+
                 for (ConsumerRecord<String, String> record : records) {
                     logRecord(record);
                 }
@@ -57,11 +64,11 @@ public class Consumer implements Runnable {
 
     private Properties createProperties(int id, String groupId, List<String> topics, String server) {
         Properties properties = new Properties();
-        properties.put(BOOTSTRAP_SERVER_PROPERTY_NAME, server);
-        properties.put(GROUP_ID_PROPERTY_NAME, groupId);
+        properties.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, server);
+        properties.put(ConsumerConfig.GROUP_ID_CONFIG, groupId);
         // Using StringDeserializer as a default
-        properties.put(KEY_DESERIALIZER_PROPERTY_NAME, StringDeserializer.class.getName());
-        properties.put(VALUE_DESERIALIZER_PROPERTY_NAME, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
+        properties.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class.getName());
         return properties;
     }
 
