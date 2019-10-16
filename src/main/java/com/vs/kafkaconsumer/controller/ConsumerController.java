@@ -14,23 +14,23 @@ public class ConsumerController {
     @Autowired
     ConsumerService consumerService;
 
-    @GetMapping("/consumers")
+    @GetMapping
     public List<ConsumerDto> getConsumers() {
         return consumerService.getConsumers();
     }
 
-    @GetMapping("/consumers/groups")
+    @GetMapping("/groups")
     public Set<String> getConsumerGroups() {
         return consumerService.getConsumerGroups();
     }
 
-    @GetMapping("/consumers/{groupId}")
+    @GetMapping("/{groupId}")
     public List<ConsumerDto> getConsumers(
             @PathVariable String groupId) {
         return consumerService.getConsumers(groupId);
     }
 
-    @PostMapping("/consumers/{groupId}")
+    @PostMapping("/{groupId}")
     public ConsumerDto addConsumer(
             @PathVariable String groupId,
             @RequestParam List<String> topics) {

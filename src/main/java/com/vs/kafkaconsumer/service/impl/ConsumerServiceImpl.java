@@ -29,9 +29,6 @@ public class ConsumerServiceImpl implements ConsumerService {
     @Value("${kafka.defaultServer}")
     private String defaultServer;
 
-    @Value("${kafka.defaultTopic}")
-    private String defaultTopic;
-
     public ConsumerServiceImpl() {
         this.executor = Executors.newCachedThreadPool();
         this.consumerRegistry = new HashMap<>();

@@ -40,10 +40,10 @@ public class Consumer implements Runnable {
             while (true) {
                 ConsumerRecords<String, String> records = consumer.poll(Long.MAX_VALUE);
 
-                if (records.count()==0) {
+                if (records.count() == 0) {
                     noRecordsCount++;
                     if (noRecordsCount > giveUp) {
-                        LOGGER.info("Gave up after 100 tries!");
+                        LOGGER.info("Gave up after {} tries!", giveUp);
                         break;
                     }
 
@@ -52,6 +52,8 @@ public class Consumer implements Runnable {
                 for (ConsumerRecord<String, String> record : records) {
                     logRecord(record);
                 }
+
+                LOGGER.info("Received {} records in total!", records.count());
             }
         } catch (WakeupException e) {
             // Ignore

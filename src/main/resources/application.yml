@@ -9,4 +9,3 @@ server:
 
 kafka:
   defaultServer: localhost:9092
-  defaultTopic: test
